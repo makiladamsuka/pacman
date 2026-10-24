@@ -29,63 +29,89 @@ count = 0
 flicker = False
 
 def draw_board(level):
-    num1 = (HIGHT - 50) // 30 
-    num2 = (WIDTH // 30)
+    cell_height = (HIGHT - 50) // 30 
+    cell_width= (WIDTH // 30)
     
     for i in range(len(level)):
         for j in range(len(level[i])):
             if level[i][j] == 1:
-                pygame.draw.circle(screen, (255, 255, 255), (j * num1 + (0.5* num1), i * num1 + (0.5* num1)), 3)
+                pygame.draw.circle(screen, (255, 255, 255), (j * cell_height + (0.5* cell_height), i * cell_height + (0.5* cell_height)), 3)
             if level[i][j] == 2 and not flicker:
-                pygame.draw.circle(screen, (255, 255, 255), (j * num1 + (0.5* num1), i * num1 + (0.5* num1)), 10)
+                pygame.draw.circle(screen, (255, 255, 255), (j * cell_height + (0.5* cell_height), i * cell_height + (0.5* cell_height)), 10)
             if level[i][j] == 3:
-                pygame.draw.line(screen, (0, 0, 255), (j * num1 + (0.5* num1), i * num1), (j * num1 + (0.5* num1), i * num1 + num1), 3)
+                pygame.draw.line(screen, (0, 0, 255), (j * cell_height + (0.5* cell_height), i * cell_height), (j * cell_height + (0.5* cell_height), i * cell_height + cell_height), 3)
                 
             if level[i][j] == 4:
-                pygame.draw.line(screen, (0, 0, 255), (j * num2 , (0.5* num1) + i * num1), ( j * num2 + num2 , i * num1 + (0.5* num1)), 3)
+                pygame.draw.line(screen, (0, 0, 255), (j * cell_width, (0.5* cell_height) + i * cell_height), ( j * cell_width+ cell_width, i * cell_height + (0.5* cell_height)), 3)
                 
             if level[i][j] == 9:
-                pygame.draw.line(screen, (255, 255, 255), (j * num2 , (0.5* num1) + i * num1), ( j * num2 + num2 , i * num1 + (0.5* num1)), 3)
+                pygame.draw.line(screen, (255, 255, 255), (j * cell_width, (0.5* cell_height) + i * cell_height), ( j * cell_width+ cell_width, i * cell_height + (0.5* cell_height)), 3)
             
             if level[i][j] == 5:
-                pygame.draw.arc(screen, (0, 0, 255), ((j * num2 - (num2 * 0.4)-2), (i * num1 + (num1 * 0.5)), num2, num1), 0, PI/2, 3)
+                pygame.draw.arc(screen, (0, 0, 255), ((j * cell_width- (cell_width* 0.4)-2), (i * cell_height + (cell_height * 0.5)), cell_width, cell_height), 0, PI/2, 3)
                 
             if level[i][j] == 6:
-                pygame.draw.arc(screen, (0, 0, 255), ((j * num2 + (num2 * 0.5)), (i * num1 + (num1 * 0.5)), num2, num1), PI/2, PI, 3)
+                pygame.draw.arc(screen, (0, 0, 255), ((j * cell_width+ (cell_width* 0.5)), (i * cell_height + (cell_height * 0.5)), cell_width, cell_height), PI/2, PI, 3)
                 
             if level[i][j] == 7:
-                pygame.draw.arc(screen, (0, 0, 255), ((j * num2 + (num2 * 0.5)), (i * num1 - (num1 * 0.4)), num2, num1), PI, 3*PI/2, 3)
+                pygame.draw.arc(screen, (0, 0, 255), ((j * cell_width+ (cell_width* 0.5)), (i * cell_height - (cell_height * 0.4)), cell_width, cell_height), PI, 3*PI/2, 3)
                 
             if level[i][j] == 8:
-                pygame.draw.arc(screen, (0, 0, 255), ((j * num2 - (num2 * 0.4)-2), (i * num1 - (num1 * 0.4)), num2, num1), 3*PI/2, 2*PI, 3)
+                pygame.draw.arc(screen, (0, 0, 255), ((j * cell_width- (cell_width* 0.4)-2), (i * cell_height - (cell_height * 0.4)), cell_width, cell_height), 3*PI/2, 2*PI, 3)
 
 
 
-def check_position(x, y):
+
+def check_position(center_x, center_y):
     turns = [False, False, False, False]  # right, left, up, down
-    num1 = (HIGHT - 50) // 30
-    num2 = (WIDTH // 30)
-    num3 = 15  # half of player size
+    cell_height = (HIGHT - 50) // 30
+    cell_width = (WIDTH // 30)
+    offset = 15  # half of player size
     
-    if x//30  < 29:
+    if center_x //30  < 29:
         if direction == 0:
-            if level[center_y//num1][center_x//num2 + num3] < 3:
+            if level[center_y//cell_width][center_x//cell_width + offset] < 3:
                 turns[1] = True
                 
                 
         if direction == 1:
-            if level[center_y//num1][center_x//num2 - num3] < 3:
+            if level[center_y//cell_width][center_x//cell_width - offset] < 3:
                 turns[0] = True
                 
         if direction == 2:
-            if level[(center_y + num3)//num1 - num3][center_x//num2] < 3:
+            if level[(center_y + offset)//cell_height - offset][center_x//cell_width] < 3:
                 turns[3] = True
                 
         if direction == 3:
-            if level[(center_y - num3)//num1 + num3][center_x//num2] < 3:
+            if level[(center_y - offset)//cell_height + offset][center_x//cell_width] < 3:
                 turns[2] = True
-                
-                
+    
+    
+    if direction == 2 or direction == 3:
+        if 12 <= center_x % cell_width <= 18:
+            if level[(center_y + offset)//cell_height][center_x // cell_width] < 3:
+                turns[3] = True
+            if level[(center_y - offset)//cell_height][center_x // cell_width] < 3:
+                turns[2] = True
+        if 12 <= center_y % cell_height <= 18:
+            if level[center_y//cell_height][(center_x - offset) // cell_width] < 3:
+                turns[1] = True
+            if level[center_y//cell_height][(center_x + offset) // cell_width] < 3:
+                turns[0] = True
+
+    if direction == 0 or direction == 1:
+        if 12 <= center_x % cell_width <= 18:
+            if level[(center_y + offset)//cell_height][center_x // cell_width] < 3:
+                turns[3] = True
+            if level[(center_y - offset)//cell_height][center_x // cell_width] < 3:
+                turns[2] = True
+        if 12 <= center_y % cell_height <= 18:
+            if level[center_y//cell_height][(center_x - offset) // cell_width] < 3:
+                turns[1] = True
+            if level[center_y//cell_height][(center_x + offset) // cell_width] < 3:
+                turns[0] = True
+        
+                    
     else:
         turns[0] = True
         turns[1] = True
